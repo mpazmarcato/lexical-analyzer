@@ -4,25 +4,23 @@ use iteradores::*;
 use analisador::*;
 
 fn main() {
-    // Exemplo de uso:
-    let entrada = "450 + 20";
-    println!("Entrada: {entrada}");
-
-    let mut resto = entrada;
+    let mut entrada = "450 + 20";
+    let mut offset = 0;
 
     loop {
-        match proximo(resto) {
-            Ok((pos, token, novo_resto)) {
-                println!("Token: {token}, posição: {pos}");
-                resto = novo_resto;
-            }
-            Err(Some(erro)) => {
-                println!("Erro na posição {erro}");
-                break;
+        match proximo(entrada, offset) {
+            Ok((pos, token, resto, novo_offset)) => {
+                println!("Token: {}, posição: {}", token, pos);
+                entrada = resto;
+                offset = novo_offset;
             }
             Err(None) => {
                 println!("Fim da análise");
-                break
+                break;
+            }
+            Err(Some(pos)) => {
+                println!("Erro na posição {}", pos);
+                break;
             }
         }
     }

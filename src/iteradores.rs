@@ -48,11 +48,11 @@ impl<'a> Iterator for CharIndices<'a> {
         }
         
         let ch = self.slice.chars().next().unwrap();
-        let len = self.slice.len();
+        let ch_len = ch.len_utf8();
         let index = self.index;
         
-        self.slice = &self.slice[len..];
-        self.index += len;
+        self.slice = &self.slice[ch_len..];
+        self.index += ch_len;
         
         Some((index, ch))
     }

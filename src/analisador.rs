@@ -1,44 +1,51 @@
 use super::iteradores::*;
 
-pub fn proximo(_entrada: &str) -> Result<(usize, &str, &str), Option<usize>> {
-    let entrada = _entrada.trim_start_matches(|c: char| c.is_whitespace() || c == '🦀');
+pub fn proximo(_entrada: &str, offset: usize) -> Result<(usize, &str, &str, usize), Option<usize>> {
+    let mut iter = _entrada.char_indices();
 
-    if entrada.len() == 0 {
-        return Err(None);
+    let mut start_byte = 0;
+    let mut ch_opt = None;
+
+    for (i, c) in iter.by_ref() {
+        if !c.is_whitespace() && c != '🦀' {
+            start_byte = i;
+            ch_opt = Some(c);
+            break;
+        }
     }
 
-    let mut iter = entrada.char_indices();
-
-    let (start_byte, ch) = match iter.next() {
-        Some(v) => v,
+    let ch = match ch_opt {
+        Some(c) => c,
         None => return Err(None),
     };
 
-    let start_position = entrada[..start_byte].chars().count() + 1;
+    let start_position = offset + _entrada[..start_byte].chars().count() + 1;
 
     if ch.is_ascii_digit() {
         let mut end_byte = start_byte + ch.len_utf8();
 
-        for (i, c) in entrada[end_byte..].char_indices() {
+        for (_, c) in _entrada[end_byte..].char_indices() {
             if c.is_ascii_digit() {
-                end_byte += ch.len_utf8();
+                end_byte += c.len_utf8();
             } else {
-                let token = &entrada[start_byte..end_byte];
-                let resto = &entrada[end_byte..];
-                return Ok((start_position, token, resto));
+                let token = &_entrada[start_byte..end_byte];
+                let resto = &_entrada[end_byte..];
+                let novo_offset = offset + _entrada[..end_byte].chars().count();
+                return Ok((start_position, token, resto, novo_offset));
             }
         }
 
-        let token = &entrada[start_byte..end_byte];
-        let resto = "";
-        return Ok((start_position, token, resto));
+        let token = &_entrada[start_byte..end_byte];
+        let novo_offset = offset + _entrada[..end_byte].chars().count();
+        return Ok((start_position, token, "", novo_offset));
     }
 
     if "+-*/🐧".contains(ch) {
         let end_byte = start_byte + ch.len_utf8();
-        let token = &entrada[start_byte..end_byte];
-        let resto = &entrada[end_byte..];
-        return Ok((start_position, token, resto));
+        let token = &_entrada[start_byte..end_byte];
+        let resto = &_entrada[end_byte..];
+        let novo_offset = offset + _entrada[..end_byte].chars().count();
+        return Ok((start_position, token, resto, novo_offset));
     }
 
     Err(Some(start_position))
