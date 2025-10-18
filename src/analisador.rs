@@ -1,6 +1,4 @@
-use super::iteradores::*;
-
-pub fn proximo(_entrada: &str, offset: usize) -> Result<(usize, &str, &str, usize), Option<usize>> {
+pub fn next(_entrada: &str, index: usize) -> Result<(usize, &str, &str, usize), Option<usize>> {
     let mut iter = _entrada.char_indices();
 
     let mut start_byte = 0;
@@ -19,7 +17,7 @@ pub fn proximo(_entrada: &str, offset: usize) -> Result<(usize, &str, &str, usiz
         None => return Err(None),
     };
 
-    let start_position = offset + _entrada[..start_byte].chars().count() + 1;
+    let start_position = index + _entrada[..start_byte].chars().count() + 1;
 
     if ch.is_ascii_digit() {
         let mut end_byte = start_byte + ch.len_utf8();
@@ -30,22 +28,22 @@ pub fn proximo(_entrada: &str, offset: usize) -> Result<(usize, &str, &str, usiz
             } else {
                 let token = &_entrada[start_byte..end_byte];
                 let resto = &_entrada[end_byte..];
-                let novo_offset = offset + _entrada[..end_byte].chars().count();
-                return Ok((start_position, token, resto, novo_offset));
+                let novo_index = index + _entrada[..end_byte].chars().count();
+                return Ok((start_position, token, resto, novo_index));
             }
         }
 
         let token = &_entrada[start_byte..end_byte];
-        let novo_offset = offset + _entrada[..end_byte].chars().count();
-        return Ok((start_position, token, "", novo_offset));
+        let novo_index = index + _entrada[..end_byte].chars().count();
+        return Ok((start_position, token, "", novo_index));
     }
 
     if "+-*/🐧".contains(ch) {
         let end_byte = start_byte + ch.len_utf8();
         let token = &_entrada[start_byte..end_byte];
         let resto = &_entrada[end_byte..];
-        let novo_offset = offset + _entrada[..end_byte].chars().count();
-        return Ok((start_position, token, resto, novo_offset));
+        let novo_index = index + _entrada[..end_byte].chars().count();
+        return Ok((start_position, token, resto, novo_index));
     }
 
     Err(Some(start_position))
