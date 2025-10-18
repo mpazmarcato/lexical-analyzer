@@ -1,5 +1,6 @@
+use crate::iteradores::StrExt;
 pub fn next(_entrada: &str, index: usize) -> Result<(usize, &str, &str, usize), Option<usize>> {
-    let mut iter = _entrada.char_indices();
+    let mut iter = StrExt::char_indices(_entrada);
 
     let mut start_byte = 0;
     let mut ch_opt = None;
