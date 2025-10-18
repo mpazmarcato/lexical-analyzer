@@ -1,29 +1,31 @@
 mod iteradores;
 mod analisador;
-use iteradores::*;
 use analisador::*;
+use std::io::{self, Write};
 
 fn main() {
-    let exemplos = [
-        "450 + 20",
-        "450     +     20",
-        "450+20",
-        "0+-0",
-        "0 +++",
-        "10+a",
-        "10 + 20a",
-    ];
+    loop {
+        print!("Digite uma expressão (ou pressione Enter para sair): ");
+        io::stdout().flush().unwrap(); 
 
-    for mut entrada in exemplos {
-        println!("{}", entrada);
-        let mut offset = 0;
+        let mut expression = String::new();
+        io::stdin().read_line(&mut expression).unwrap();
+        let expression = expression.trim(); 
+
+        if expression.is_empty() {
+            println!("Encerrando.");
+            break;
+        }
+
+        let mut index = 0;
+        let mut text = expression;
 
         loop {
-            match proximo(entrada, offset) {
-                Ok((pos, token, resto, novo_offset)) => {
+            match next(text, index) {
+                Ok((pos, token, resto, novo_index)) => {
                     println!("Token: {}, posição: {}", token, pos);
-                    entrada = resto;
-                    offset = novo_offset;
+                    text = resto;
+                    index = novo_index;
                 }
                 Err(None) => {
                     println!("Fim da análise");
