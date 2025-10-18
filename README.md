@@ -34,13 +34,13 @@ Err(None)                                // end of input
 Err(Some(pos))                           // error at position
 ```
 
-- position: the 1-based character position of the token.
+- pos: the 1-based character position of the token.
 
 - token: the string slice representing the token.
 
 - resto: the remaining unprocessed string.
 
-- novo_offset: updated offset to maintain position across iterations.
+- novo_index: updated index to maintain position across iterations.
 
 - Iterators Chars and CharIndices allow safe traversal of characters and their byte indices in the string.
 
