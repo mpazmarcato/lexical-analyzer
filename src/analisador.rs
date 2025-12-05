@@ -1,51 +1,52 @@
 use crate::iteradores::StrExt;
-pub fn next(_entrada: &str, index: usize) -> Result<(usize, &str, &str, usize), Option<usize>> {
-    let mut iter = StrExt::char_indices(_entrada);
 
-    let mut start_byte = 0;
-    let mut ch_opt = None;
+pub fn próximo(entrada: &str, índice_atual: usize) -> Result<(usize, &str, &str, usize), Option<usize>> {
+    let mut iter = entrada.meus_char_indices();
+    let mut início_byte = 0;
+    let mut início_char = 0;
+    let mut ch_opcional = None;
 
-    for (i, c) in iter.by_ref() {
-        if !c.is_whitespace() && c != '🦀' {
-            start_byte = i;
-            ch_opt = Some(c);
+    while let Some((byte_index, char_index, ch)) = iter.next() {
+        if !ch.is_whitespace() && ch != '🦀' {
+            início_byte = byte_index;
+            início_char = char_index;
+            ch_opcional = Some(ch);
             break;
         }
     }
 
-    let ch = match ch_opt {
+    let ch = match ch_opcional {
         Some(c) => c,
         None => return Err(None),
     };
 
-    let start_position = index + _entrada[..start_byte].chars().count() + 1;
-
+    let posição = índice_atual + início_char + 1;
     if ch.is_ascii_digit() {
-        let mut end_byte = start_byte + ch.len_utf8();
+        let mut fim_byte = início_byte + ch.len_utf8();
+        let mut contagem_chars = 1;
 
-        for (_, c) in _entrada[end_byte..].char_indices() {
-            if c.is_ascii_digit() {
-                end_byte += c.len_utf8();
+        while let Some((byte_idx, _, next_ch)) = iter.next() {
+            if next_ch.is_ascii_digit() {
+                fim_byte = byte_idx + next_ch.len_utf8();
+                contagem_chars += 1;
             } else {
-                let token = &_entrada[start_byte..end_byte];
-                let resto = &_entrada[end_byte..];
-                let novo_index = index + _entrada[..end_byte].chars().count();
-                return Ok((start_position, token, resto, novo_index));
+                break;
             }
         }
 
-        let token = &_entrada[start_byte..end_byte];
-        let novo_index = index + _entrada[..end_byte].chars().count();
-        return Ok((start_position, token, "", novo_index));
+        let token = &entrada[início_byte..fim_byte];
+        let resto = &entrada[fim_byte..];
+        let novo_índice = índice_atual + início_char + contagem_chars;
+        return Ok((posição, token, resto, novo_índice));
     }
 
-    if "+-*/🐧".contains(ch) {
-        let end_byte = start_byte + ch.len_utf8();
-        let token = &_entrada[start_byte..end_byte];
-        let resto = &_entrada[end_byte..];
-        let novo_index = index + _entrada[..end_byte].chars().count();
-        return Ok((start_position, token, resto, novo_index));
-    }
+    if "+-*/".contains(ch) || ch == '🐧' {
+        let fim_byte = início_byte + ch.len_utf8();
+        let token = &entrada[início_byte..fim_byte];
+        let resto = &entrada[fim_byte..];
+        let novo_índice = índice_atual + início_char + 1;
 
-    Err(Some(start_position))
+        return Ok((posição, token, resto, novo_índice));
+    }
+    Err(Some(posição))
 }
