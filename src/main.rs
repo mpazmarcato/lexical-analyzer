@@ -47,7 +47,6 @@ fn main() {
         } else {
             println!("Nenhum token encontrado.");
         }
-
         println!();
     }
 }
