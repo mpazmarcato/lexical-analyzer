@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 pub struct Chars<'a> {
     pub slice: &'a str,
 }
